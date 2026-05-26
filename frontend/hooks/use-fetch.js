@@ -12,8 +12,15 @@ const useFetch = (cb) => {
 
     try {
       const response = await cb(...args);
-      setData(response);
-      setError(null);
+
+      // If server action returned a structured error object, treat it as an error
+      if (response && typeof response === "object" && response.success === false) {
+        setError(response);
+        toast.error(response.message || "Request failed");
+      } else {
+        setData(response);
+        setError(null);
+      }
     } catch (error) {
       setError(error);
       toast.error(error.message);

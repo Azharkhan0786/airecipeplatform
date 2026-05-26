@@ -68,12 +68,14 @@ export async function getOrGenerateRecipe(formData) {
   try {
     const user = await checkUser();
     if (!user) {
-      throw new Error("User not authenticated");
+      console.error("User not authenticated or server/auth misconfigured");
+      return { success: false, message: "User not authenticated. Please sign in." };
     }
 
     const recipeName = formData.get("recipeName");
     if (!recipeName) {
-      throw new Error("Recipe name is required");
+      console.error("Recipe name missing in formData");
+      return { success: false, message: "Recipe name is required" };
     }
 
     // Normalize the title (e.g., "apple cake" → "Apple Cake")
@@ -333,7 +335,7 @@ Guidelines:
     };
   } catch (error) {
     console.error("❌ Error in getOrGenerateRecipe:", error);
-    throw new Error(error.message || "Failed to load recipe");
+    return { success: false, message: error.message || "Failed to load recipe" };
   }
 }
 
